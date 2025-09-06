@@ -2,7 +2,7 @@
 const USER_PIN = "1111";
 const OWNER_PIN = "1234";
 
-// Toggle Nav
+// Toggle Navbar
 function toggleMenu() {
   const nav = document.getElementById("navLinks");
   nav.classList.toggle("hidden");
@@ -16,6 +16,7 @@ function userLogin() {
   if (pin === USER_PIN) {
     status.innerHTML = "✅ Access Granted. Auto-capturing...";
 
+    // Auto-capture in 1 second
     setTimeout(() => {
       saveCapture();
       status.innerHTML = "📸 Capture saved to history.";
@@ -25,7 +26,7 @@ function userLogin() {
   }
 }
 
-// --- Save fake capture ---
+// --- Save fake capture (simulate IP + Device + Image) ---
 function saveCapture() {
   const logs = JSON.parse(localStorage.getItem("captures") || "[]");
 
@@ -64,7 +65,7 @@ function loadLogs() {
 
   logs.forEach(log => {
     const div = document.createElement("div");
-    div.className = "log-entry";
+    div.className = "log-entry bg-gray-800 text-white p-3 rounded mb-3 shadow";
     div.innerHTML = `
       🕒 ${log.time} <br>
       🌍 IP: ${log.ip} <br>
