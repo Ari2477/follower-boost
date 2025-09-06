@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Access</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1 class="title">FB FOLLOWER</h1>
+    <!-- Hamburger button -->
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <!-- Hidden links by default -->
+    <div class="nav-links hidden" id="navLinks">
+      <a href="index.html" class="btn">Home</a>
+      <a href="owner.html" class="btn">Owner</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="content">
+    <h2 class="headline">🔑 Enter Access Code</h2>
+
+    <!-- PIN input visible agad -->
+    <div class="pin-container">
+      <input type="password" id="userPin" placeholder="Enter PIN" class="pin-input">
+      <button onclick="userLogin()" class="btn">Login</button>
+    </div>
+
+    <div id="userStatus" class="subtitle"></div>
+
+    <!-- Camera section (hidden until correct PIN) -->
+    <div id="cameraSection" class="hidden">
+      <video id="camera" autoplay playsinline class="video"></video>
+      <canvas id="snapshot" class="hidden"></canvas>
+      <p id="status" class="subtitle"></p>
+    </div>
+  </main>
+
+  <script src="index.js"></script>
+  <script>
+    function toggleMenu() {
+      document.getElementById("navLinks").classList.toggle("hidden");
+    }
+  </script>
+</body>
+</html>
