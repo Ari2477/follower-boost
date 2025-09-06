@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1 class="title">🔑 Owner Panel</h1>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="nav-links hidden" id="navLinks">
+      <a href="index.html" class="btn">Home</a>
+      <a href="owner.html" class="btn">Owner</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="content">
+    <h2 class="headline">Enter Owner PIN</h2>
+    <div class="pin-container">
+      <input type="password" id="ownerPin" placeholder="Enter Owner PIN" class="pin-input">
+      <button onclick="checkOwner()" class="btn">Unlock</button>
+    </div>
+
+    <div id="logs" class="logs hidden">
+      <h3 class="headline">📂 Capture History</h3>
+      <div id="logContainer" class="log-container"></div>
+    </div>
+  </main>
+
+  <script src="index.js"></script>
+</body>
+</html>
