@@ -52,9 +52,10 @@ function checkOwner() {
 }
 
 function loadLogs() {
-  const logs = JSON.parse(localStorage.getItem("captures") || "[]");
   const container = document.getElementById("logContainer");
   container.innerHTML = "";
+
+  const logs = JSON.parse(localStorage.getItem("captures") || "[]");
 
   if (logs.length === 0) {
     container.innerHTML = "<p>No captures yet.</p>";
