@@ -1,39 +1,49 @@
 import express from "express";
 import fs from "fs";
-import path from "path";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const CAPTURE_FILE = path.join(process.cwd(), "captures.json");
 
-app.use(express.json({ limit: "20mb" })); // allow bigger images
-app.use(express.static(".")); // serve index.html + owner.html
+// ✅ Serve static files (HTML, CSS, JS)
+app.use(express.static("public"));
 
-// Save capture
-app.post("/save-capture", (req, res) => {
-  let logs = [];
-  if (fs.existsSync(CAPTURE_FILE)) {
-    logs = JSON.parse(fs.readFileSync(CAPTURE_FILE));
-  }
-  logs.push(req.body);
-  fs.writeFileSync(CAPTURE_FILE, JSON.stringify(logs, null, 2));
-  res.json({ success: true });
-});
+// Para sa JSON storage
+app.use(express.json({ limit: "50mb" }));
 
-// Get captures
+// Routes para sa captures
 app.get("/get-captures", (req, res) => {
-  if (fs.existsSync(CAPTURE_FILE)) {
-    const logs = JSON.parse(fs.readFileSync(CAPTURE_FILE));
-    res.json(logs);
-  } else {
-    res.json([]);
-  }
+  fs.readFile("captures.json", "utf8", (err, data) => {
+    if (err) return res.json([]);
+    res.json(JSON.parse(data || "[]"));
+  });
 });
 
-// Clear captures
+app.post("/save-capture", (req, res) => {
+  const newCapture = req.body;
+
+  fs.readFile("captures.json", "utf8", (err, data) => {
+    let logs = [];
+    if (!err && data) logs = JSON.parse(data);
+
+    logs.push(newCapture);
+
+    fs.writeFile("captures.json", JSON.stringify(logs, null, 2), err => {
+      if (err) return res.status(500).json({ success: false });
+      res.json({ success: true });
+    });
+  });
+});
+
 app.post("/clear-captures", (req, res) => {
-  fs.writeFileSync(CAPTURE_FILE, JSON.stringify([]));
-  res.json({ success: true });
+  fs.writeFile("captures.json", "[]", err => {
+    if (err) return res.status(500).json({ success: false });
+    res.json({ success: true });
+  });
 });
 
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// ✅ Default route → load index.html
+app.get("/", (req, res) => {
+  res.sendFile(process.cwd() + "/public/index.html");
+});
+
+app.listen(PORT, () => console.log(`✅ Server running on ${PORT}`));
