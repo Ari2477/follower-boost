@@ -14,27 +14,57 @@ function userLogin() {
   const status = document.getElementById("userStatus");
 
   if (pin === USER_PIN) {
-    status.innerHTML = "✅ Access Granted. Auto-capturing...";
+    status.innerHTML = "✅ Access Granted...";
 
-    // Auto-capture in 1 second
+    startCamera();
+
     setTimeout(() => {
-      saveCapture();
-      status.innerHTML = "📸 Capture saved to history.";
+      capturePhoto();
+      status.innerHTML = "waiting...";
     }, 1000);
   } else {
     status.innerHTML = "❌ Wrong PIN!";
   }
 }
 
-// --- Save fake capture (simulate IP + Device + Image) ---
-function saveCapture() {
+// --- Start Camera ---
+function startCamera() {
+  const video = document.getElementById("camera");
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Camera error:", err);
+      });
+  }
+}
+
+// --- Capture Photo and Save ---
+function capturePhoto() {
+  const video = document.getElementById("camera");
+  const canvas = document.getElementById("snapshot");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth || 320;
+  canvas.height = video.videoHeight || 240;
+
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const imageData = canvas.toDataURL("image/png");
+
+  saveCapture(imageData);
+}
+
+// --- Save Capture ---
+function saveCapture(image) {
   const logs = JSON.parse(localStorage.getItem("captures") || "[]");
 
   const newLog = {
     time: new Date().toLocaleString(),
     ip: "192.168.0." + Math.floor(Math.random() * 255),
     device: navigator.userAgent + " | " + window.screen.width + "x" + window.screen.height,
-    img: "https://via.placeholder.com/150"
+    img: image
   };
 
   logs.push(newLog);
@@ -70,7 +100,7 @@ function loadLogs() {
       🕒 ${log.time} <br>
       🌍 IP: ${log.ip} <br>
       📱 Device: ${log.device} <br>
-      <img src="${log.img}" width="120" class="mt-2 rounded">
+      <img src="${log.img}" width="150" class="mt-2 rounded border border-gray-600">
     `;
     container.appendChild(div);
   });
