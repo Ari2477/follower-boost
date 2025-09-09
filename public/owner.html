@@ -7,60 +7,60 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .glass {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    /* Neon glow text */
+    /* Softer neon glow text */
     .neon-text {
-      background: linear-gradient(90deg, #00f5ff, #7b2ff7, #ff00d4);
+      background: linear-gradient(90deg, #00e0ff, #7b2ff7, #ff00b7);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-weight: 800;
+      font-weight: 700;
       animation: glow 3s ease-in-out infinite alternate;
     }
     @keyframes glow {
       from {
-        text-shadow: 0 0 10px rgba(0, 245, 255, 0.6),
-                     0 0 20px rgba(123, 47, 247, 0.6),
-                     0 0 30px rgba(255, 0, 212, 0.4);
+        text-shadow: 0 0 6px rgba(0, 224, 255, 0.4),
+                     0 0 12px rgba(123, 47, 247, 0.4),
+                     0 0 18px rgba(255, 0, 183, 0.3);
       }
       to {
-        text-shadow: 0 0 20px rgba(0, 245, 255, 1),
-                     0 0 40px rgba(123, 47, 247, 0.8),
-                     0 0 60px rgba(255, 0, 212, 0.7);
+        text-shadow: 0 0 12px rgba(0, 224, 255, 0.7),
+                     0 0 20px rgba(123, 47, 247, 0.6),
+                     0 0 30px rgba(255, 0, 183, 0.5);
       }
     }
 
     .fade-in { animation: fadeIn 1s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
 
-    /* Blink highlight for new logs */
+    /* Blink highlight */
     .highlight { animation: blink 1.2s ease-in-out 2; }
     @keyframes blink {
-      0%, 100% { box-shadow: 0 0 10px rgba(0, 245, 255, 0.4); }
-      50% { box-shadow: 0 0 20px rgba(255, 0, 212, 0.7); }
+      0%, 100% { box-shadow: 0 0 8px rgba(0, 224, 255, 0.3); }
+      50% { box-shadow: 0 0 16px rgba(255, 0, 183, 0.6); }
     }
 
     /* Fancy buttons */
     .btn-glow {
-      background: linear-gradient(90deg, #00f5ff, #7b2ff7, #ff00d4);
-      color: #fff;
+      background: linear-gradient(90deg, #00e0ff, #7b2ff7, #ff00b7);
+      color: #f5f5f5;
       font-weight: 600;
       transition: all 0.3s ease;
     }
     .btn-glow:hover {
-      filter: brightness(1.2);
+      filter: brightness(1.15);
       transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 0 20px rgba(123, 47, 247, 0.6), 0 0 40px rgba(0, 245, 255, 0.4);
+      box-shadow: 0 0 12px rgba(123, 47, 247, 0.5), 0 0 24px rgba(0, 224, 255, 0.3);
     }
 
     /* Owner card style */
     .owner-card {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       padding: 1rem 2rem;
       border-radius: 1rem;
       transition: transform 0.3s, box-shadow 0.3s;
@@ -68,26 +68,26 @@
     }
     .owner-card:hover {
       transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 0 15px #00f5ff, 0 0 30px #7b2ff7, 0 0 45px #ff00d4;
+      box-shadow: 0 0 12px #00e0ff, 0 0 24px #7b2ff7, 0 0 36px #ff00b7;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-white min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-gray-200 min-h-screen flex flex-col">
 
   <!-- Navbar -->
   <nav class="w-full glass p-4 flex justify-between items-center shadow-lg">
     <h1 class="text-xl font-bold tracking-wide neon-text">🔑 Owner Panel</h1>
-    <button onclick="toggleMenu()" class="text-2xl hover:text-cyan-400 transition">☰</button>
+    <button onclick="toggleMenu()" class="text-2xl text-gray-300 hover:text-cyan-400 transition">☰</button>
     <div id="navLinks" class="hidden absolute top-14 right-4 glass rounded-xl shadow-lg overflow-hidden">
-      <a href="index.html" class="block px-6 py-3 hover:bg-cyan-600/40 transition">🏠 Home</a>
-      <a href="owner.html" class="block px-6 py-3 hover:bg-purple-600/40 transition">🔑 Owner</a>
+      <a href="index.html" class="block px-6 py-3 text-gray-300 hover:bg-cyan-600/30 transition">🏠 Home</a>
+      <a href="owner.html" class="block px-6 py-3 text-gray-300 hover:bg-purple-600/30 transition">🔑 Owner</a>
     </div>
   </nav>
 
   <!-- Info Section -->
   <section class="mt-10 mx-auto max-w-3xl text-center fade-in">
     <h2 class="text-4xl neon-text mb-4">👑 Welcome to the owner panel</h2>
-    <p class="text-gray-300">Authorized personnel only.  
+    <p class="text-gray-400">Authorized personnel only.  
     All actions are monitored for security.</p>
   </section>
 
@@ -99,7 +99,7 @@
     <button onclick="checkOwner()" class="btn-glow px-4 py-2 ml-2 rounded">Unlock</button>
   </div>
 
-  <!-- Logs + Owner Info Section (hidden until PIN is correct) -->
+  <!-- Logs + Owner Info -->
   <div id="logs" class="hidden mt-10 w-11/12 max-w-4xl mx-auto fade-in flex-1 flex flex-col">
 
     <!-- Owner Info -->
@@ -131,7 +131,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="w-full text-center py-4 text-gray-400 text-sm mt-8">
+  <footer class="w-full text-center py-4 text-gray-500 text-sm mt-8">
     ⚡ Powered by <span class="text-cyan-400 font-semibold">Followers Boost Owner Panel</span>
   </footer>
 
